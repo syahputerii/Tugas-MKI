@@ -101,8 +101,53 @@
           toggleBtn.setAttribute("aria-pressed", passEl.type === "text");
         });
 
+        // ================= CAPTCHA =================
+        let captchaCode = "";
+
+        function generateCaptcha() {
+          captchaCode = Math.random().toString(36).substring(2, 7);
+
+          const canvas = document.getElementById("captchaCanvas");
+          const ctx = canvas.getContext("2d");
+
+          ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+          ctx.font = "24px Arial";
+          ctx.fillStyle = "#333";
+          ctx.fillText(captchaCode, 20, 28);
+
+          // garis noise
+          for (let i = 0; i < 3; i++) {
+            ctx.beginPath();
+            ctx.moveTo(Math.random() * 120, Math.random() * 40);
+            ctx.lineTo(Math.random() * 120, Math.random() * 40);
+            ctx.strokeStyle = "#aaa";
+            ctx.stroke();
+          }
+        }
+
+        document.getElementById("refreshCaptcha").addEventListener("click", generateCaptcha);
+
+        // generate captcha pertama kali
+        generateCaptcha();
+
+
         form.addEventListener("submit", (e) => {
           e.preventDefault();
+          
+          // VALIDASI CAPTCHA
+          const inputCaptcha = document.getElementById("captchaInput").value.trim();
+
+          if (inputCaptcha.toLowerCase() !== captchaCode.toLowerCase()) {
+            err.textContent = "Captcha salah, coba lagi.";
+            err.classList.add("show");
+            generateCaptcha();
+            document.getElementById("captchaInput").value = "";
+            return;
+          }
+
+
+
           const lock = readLock();
           if (lock.until && lock.until > Date.now()) return;
 
@@ -189,6 +234,18 @@
               👁️
             </button>
           </div>
+
+          <div class="row">
+            <label>Captcha</label>
+
+            <!-- Tampilan captcha -->
+            <canvas id="captchaCanvas" width="120" height="40"></canvas>
+            <button type="button" id="refreshCaptcha">↻</button>
+
+            <!-- Input user -->
+            <input id="captchaInput" type="text" placeholder="Masukkan captcha" required>
+          </div>
+
 
           <div class="actions">
             <span class="hint">Lupa akun? Hubungi admin.</span>
