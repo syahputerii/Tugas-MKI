@@ -101,7 +101,6 @@
           toggleBtn.setAttribute("aria-pressed", passEl.type === "text");
         });
 
-        // ================= CAPTCHA =================
         let captchaCode = "";
 
         function generateCaptcha() {
@@ -116,7 +115,6 @@
           ctx.fillStyle = "#333";
           ctx.fillText(captchaCode, 20, 28);
 
-          // garis noise
           for (let i = 0; i < 3; i++) {
             ctx.beginPath();
             ctx.moveTo(Math.random() * 120, Math.random() * 40);
@@ -126,17 +124,18 @@
           }
         }
 
-        document.getElementById("refreshCaptcha").addEventListener("click", generateCaptcha);
+        document
+          .getElementById("refreshCaptcha")
+          .addEventListener("click", generateCaptcha);
 
-        // generate captcha pertama kali
         generateCaptcha();
-
 
         form.addEventListener("submit", (e) => {
           e.preventDefault();
-          
-          // VALIDASI CAPTCHA
-          const inputCaptcha = document.getElementById("captchaInput").value.trim();
+
+          const inputCaptcha = document
+            .getElementById("captchaInput")
+            .value.trim();
 
           if (inputCaptcha.toLowerCase() !== captchaCode.toLowerCase()) {
             err.textContent = "Captcha salah, coba lagi.";
@@ -145,8 +144,6 @@
             document.getElementById("captchaInput").value = "";
             return;
           }
-
-
 
           const lock = readLock();
           if (lock.until && lock.until > Date.now()) return;
@@ -243,9 +240,13 @@
             <button type="button" id="refreshCaptcha">↻</button>
 
             <!-- Input user -->
-            <input id="captchaInput" type="text" placeholder="Masukkan captcha" required>
+            <input
+              id="captchaInput"
+              type="text"
+              placeholder="Masukkan captcha"
+              required
+            />
           </div>
-
 
           <div class="actions">
             <span class="hint">Lupa akun? Hubungi admin.</span>
