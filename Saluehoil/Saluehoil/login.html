@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Login — Salueh Oil</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;500;700&display=swap"
+      rel="stylesheet"
+    />
+
+    <link rel="stylesheet" href="style.css" />
+
+    <script defer src="script.js"></script>
+
+    <script>
+      document.addEventListener("DOMContentLoaded", () => {
+        const form = document.querySelector("form");
+        const err = document.getElementById("err");
+        const userEl = document.getElementById("username");
+        const passEl = document.getElementById("password");
+        const toggleBtn = document.getElementById("togglePw");
+        const help = document.getElementById("help");
+        const submitBtn = document.getElementById("btnLogin");
+
+        const LOCK_KEY = "salueh.lock.login";
+        const LOCK_MS = 60 * 1000;
+        let timerId = null;
+
+        function readLock() {
+          try {
+            return (
+              JSON.parse(localStorage.getItem(LOCK_KEY)) || {
+                fails: 0,
+                until: null,
+              }
+            );
+          } catch {
+            return { fails: 0, until: null };
+          }
+        }
+        function writeLock(obj) {
+          localStorage.setItem(LOCK_KEY, JSON.stringify(obj));
+        }
+        function clearLock() {
+          localStorage.removeItem(LOCK_KEY);
+        }
+        function setDisabled(disabled) {
+          userEl.disabled = disabled;
+          passEl.disabled = disabled;
+          submitBtn.disabled = disabled;
+          toggleBtn.disabled = disabled;
+        }
+        function startCountdown(untilTs) {
+          setDisabled(true);
+          help.style.display = "block";
+          function tick() {
+            const remain = Math.max(0, untilTs - Date.now());
+            const s = Math.ceil(remain / 1000);
+            err.textContent = `Akun terkunci sementara ${s}s. Hubungi admin di WhatsApp: 0812-5013-3019 untuk reset.`;
+            err.classList.add("show");
+            if (remain <= 0) {
+              clearInterval(timerId);
+              clearLock();
+              err.classList.remove("show");
+              setDisabled(false);
+              passEl.value = "";
+              passEl.focus();
+            }
+          }
+          tick();
+          timerId = setInterval(tick, 1000);
+        }
+
+        const rawNow = sessionStorage.getItem("salueh.auth.v1");
+        if (rawNow) {
+          const data = JSON.parse(rawNow);
+          if (data?.r === "admin") {
+            location.replace("admin.html");
+          } else {
+            location.replace("index.html");
+          }
+          return;
+        }
+
+        (function initLockState() {
+          const lock = readLock();
+          if (lock.until && lock.until > Date.now()) {
+            startCountdown(lock.until);
+          } else if (lock.until && lock.until <= Date.now()) {
+            clearLock();
+          }
+        })();
+
+        toggleBtn.addEventListener("click", (e) => {
+          e.preventDefault();
+          passEl.type = passEl.type === "password" ? "text" : "password";
+          toggleBtn.setAttribute("aria-pressed", passEl.type === "text");
+        });
+
+        form.addEventListener("submit", (e) => {
+          e.preventDefault();
+          const lock = readLock();
+          if (lock.until && lock.until > Date.now()) return;
+
+          const result = Auth.login(userEl.value.trim(), passEl.value);
+
+          if (result === true) {
+            clearLock();
+            const raw = sessionStorage.getItem("salueh.auth.v1");
+            const data = raw ? JSON.parse(raw) : null;
+            const fallback =
+              data?.r === "admin"
+                ? "admin.html"
+                : data?.r === "operator"
+                ? "operator.html"
+                : "index.html";
+            location.replace(fallback);
+          } else {
+            const current = readLock();
+            current.fails = (current.fails || 0) + 1;
+
+            if (result === "no-user") {
+              err.textContent =
+                "Username tidak ditemukan. Periksa kembali atau hubungi admin.";
+              err.classList.add("show");
+            } else if (result === "wrong-pass") {
+              err.textContent = "Password salah untuk username tersebut.";
+              err.classList.add("show");
+            }
+
+            if (current.fails >= 3) {
+              current.until = Date.now() + LOCK_MS;
+              writeLock(current);
+              help.style.display = "block";
+              startCountdown(current.until);
+            } else {
+              writeLock(current);
+            }
+          }
+        });
+      });
+    </script>
+  </head>
+
+  <body class="login-page">
+    <div class="wrap">
+      <div
+        class="card"
+        role="dialog"
+        aria-labelledby="ttl"
+        aria-describedby="desc"
+      >
+        <div class="brand">
+          <img src="images/logo_salueh.png" alt="Logo Salueh Oil" />
+          <div>
+            <h1 id="ttl">Masuk ke Salueh Oil</h1>
+            <p class="sub" id="desc">
+              Akses konten hanya untuk pengguna terdaftar.
+            </p>
+          </div>
+        </div>
+
+        <form autocomplete="on">
+          <div class="row">
+            <label for="username">Username</label>
+            <input
+              id="username"
+              name="username"
+              type="text"
+              placeholder="mis. pengunjung@gmail.com"
+              required
+            />
+          </div>
+
+          <div class="row pw">
+            <label for="password">Password</label>
+            <input
+              id="password"
+              name="password"
+              type="password"
+              placeholder="••••••••"
+              required
+            />
+            <button id="togglePw" aria-label="Tampilkan/sembunyikan password">
+              👁️
+            </button>
+          </div>
+
+          <div class="actions">
+            <span class="hint">Lupa akun? Hubungi admin.</span>
+            <button id="btnLogin" class="btn btn-primary" type="submit">
+              Masuk
+            </button>
+          </div>
+
+          <div id="err" class="error" role="alert" aria-live="polite"></div>
+
+          <div id="help" class="hint" style="display: none; margin-top: 10px">
+            Akun terkunci sementara. Hubungi admin di
+            <a
+              class="link"
+              href="https://wa.me/6281250133019"
+              target="_blank"
+              rel="noopener"
+              >WhatsApp: 0812-5013-3019</a
+            >
+            untuk reset.
+          </div>
+        </form>
+
+        <footer>© 2025 Salueh Oil</footer>
+      </div>
+    </div>
+  </body>
+</html>

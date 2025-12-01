@@ -1,0 +1,458 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <link
+      href="https://fonts.googleapis.com/css2?family=Edu+SA+Beginner:wght@500&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Outfit:wght@100;200;300;500;600;700;800;900&display=swap"
+      rel="stylesheet"
+    />
+
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css"
+      integrity="sha512-iBBXm8fW90+nuLcSKlbmrPcLa0OT92xO1BIsZ+ywDWZCvqsWgccV3gFoRBv0z+8dLJgyAHIhR35VZc2oM/gI1w=="
+      crossorigin="anonymous"
+      referrerpolicy="no-referrer"
+    />
+
+    <link
+      id="favicon"
+      rel="icon"
+      type="image/png"
+      sizes="32x32"
+      href="images/logo_salueh_2.jpeg"
+    />
+    <link
+      rel="apple-touch-icon"
+      sizes="180x180"
+      href="images/logo_salueh.png"
+    />
+    <meta name="theme-color" content="#fffbe6" />
+
+    <link rel="stylesheet" href="style.css" />
+
+    <title>Salueh Oil</title>
+
+    <script defer src="script.js"></script>
+    <script>
+      document.addEventListener("DOMContentLoaded", () => {
+        const raw = sessionStorage.getItem("salueh.auth.v1");
+        const data = raw ? JSON.parse(raw) : null;
+
+        if (!data) {
+          window.location.replace("login.html?next=index.html");
+          return;
+        }
+        if (data.r !== "pengunjung") {
+          window.location.replace("admin.html");
+          return;
+        }
+      });
+    </script>
+  </head>
+
+  <body>
+    <header>
+      <nav class="active">
+        <a
+          href=""
+          class="logo"
+          style="display: flex; align-items: center; gap: 8px"
+        >
+          <img
+            src="images/logo_salueh.png"
+            alt="logo"
+            style="
+              width: 65px;
+              height: 65px;
+              object-fit: cover;
+              border-radius: 3px;
+            "
+          />
+          <h4 style="margin: 0">Salueh Oil</h4>
+        </a>
+
+        <ul>
+          <li><a class="active" href="#beranda">Beranda</a></li>
+          <li><a href="#produk">Produk</a></li>
+          <li><a href="#galeri">galeri</a></li>
+          <li><a href="#tentang">Tentang</a></li>
+          <li><a href="#testimonial">Ulasan</a></li>
+          <li><a href="#faq">FAQ</a></li>
+          <li><a href="#kontak">Kontak</a></li>
+        </ul>
+
+        <button id="btnLogout" class="btn-logout">Keluar</button>
+
+        <div class="menu-toggle">
+          <input type="checkbox" />
+          <span></span>
+          <span></span>
+          <span></span>
+        </div>
+      </nav>
+    </header>
+
+    <main>
+      <section id="beranda" class="beranda">
+        <div class="content">
+          <div class="paket">
+            <img src="Images/produk_salueh.png" />
+          </div>
+          <h2>
+            Salueh "Saluang Belum dan Sereh"<br />Merupakan produk yang
+            menggabungkan dua bahan utama Kalimantan, yaitu<br />akar saluang
+            belum dan sereh <br />
+          </h2>
+          <a href="">Beli Sekarang <i class="fas fa-shopping-cart"></i></a>
+        </div>
+      </section>
+
+      <section id="produk" class="produk">
+        <div class="produk-container">
+          <h2 class="produk-title">🌿 Salueh Oil - Minyak Urut Herbal 🌿</h2>
+
+          <article class="produk-flex">
+            <div class="produk-card">
+              <h3 class="produk-subtitle">Komposisi</h3>
+              <ul class="produk-list">
+                <li><strong>🌿 Akar Saluang Belum</strong></li>
+                <li><strong>🌿 Sereh</strong></li>
+                <li><strong>🌿 Minyak Kelapa Murni (VCO)</strong></li>
+              </ul>
+            </div>
+
+            <div class="produk-card">
+              <h3 class="produk-subtitle">Manfaat Tiap Bahan</h3>
+              <ul class="produk-list">
+                <li>
+                  <strong>Akar Saluang Belum:</strong> obat tradisional untuk
+                  berbagai penyakit, seperti sakit punggung, ginjal serta
+                  sebagai penambah vitalitas.
+                </li>
+                <li>
+                  <strong>Sereh:</strong> memiliki sifat antiseptik, meredakan
+                  nyeri, anti-inflamasi, dan dapat meningkatkan sirkulasi darah.
+                </li>
+                <li>
+                  <strong>Minyak Kelapa Murni (VCO):</strong> menjaga kesehatan
+                  tubuh dan kulit karena mengandung antioksidan serta sifat
+                  antimikroba alami.
+                </li>
+              </ul>
+            </div>
+          </article>
+
+          <div class="produk-highlight">
+            <h3 class="produk-subtitle">Manfaat Produk "Salueh Oil"</h3>
+            <p class="produk-desc">
+              Salueh Oil adalah minyak urut herbal berbahan dasar alami yang
+              diformulasikan untuk membantu meredakan nyeri sendi setelah
+              aktivitas, memberikan rasa rileks pada tubuh, sekaligus melindungi
+              kulit dari gigitan nyamuk. Selain itu, kandungan alaminya juga
+              bermanfaat untuk menjaga kesehatan kulit agar tetap lembap, halus,
+              dan terawat setiap hari.
+            </p>
+          </div>
+
+          <aside class="produk-highlight">
+            <h3 class="produk-subtitle">Tips Penggunaan</h3>
+            <p class="produk-desc">
+              Gunakan Salueh Oil setelah mandi atau sebelum tidur untuk efek
+              relaksasi maksimal. Pijat lembut pada bagian tubuh yang pegal atau
+              terasa kaku.
+            </p>
+
+            <h3 class="produk-subtitle">Fun Fact 🌱</h3>
+            <p class="produk-desc">
+              Akar Saluang Belum telah digunakan oleh masyarakat pedalaman
+              Kalimantan selama ratusan tahun sebagai bahan jamu tradisional.
+            </p>
+          </aside>
+        </div>
+      </section>
+
+      <section id="galeri" class="galeri">
+        <div class="galeri-container">
+          <h2 class="galeri-heading">Galeri Produk</h2>
+
+        <div class="galeri-grid">
+          <div class="galeri-item">
+            <img src="images/produk1.jpg" alt="Foto Produk 1" />
+          </div>
+          <div class="galeri-item">
+            <img src="images/produk2.jpg" alt="Foto Produk 2" />
+          </div>
+          <div class="galeri-item">
+            <img src="images/produk3.jpg" alt="Foto Produk 3" />
+          </div>
+        </div>
+
+        <div class="produk-info-grid">
+          <div
+            class="produk-info-box"
+            data-sku="S60"
+            data-name="Salueh Oil 60 ML"
+            data-price="20000"
+          >
+            <p class="produk-ukuran">Ukuran: 60 ML</p>
+            <div class="price-row">
+              <p class="produk-harga">Harga: Rp20.000</p>
+              <button class="btn-add" aria-label="Tambah ke keranjang">+</button>
+            </div>
+          </div>
+
+          <div
+            class="produk-info-box"
+            data-sku="S100"
+            data-name="Salueh Oil 100 ML"
+            data-price="25000"
+          >
+            <p class="produk-ukuran">Ukuran: 100 ML</p>
+            <div class="price-row">
+              <p class="produk-harga">Harga: Rp25.000</p>
+              <button class="btn-add" aria-label="Tambah ke keranjang">+</button>
+            </div>
+          </div>
+        </div>
+        </div>
+      </section>
+
+      <section id="tentang" class="tentang">
+        <div class="tentang-container">
+          <h2 class="tentang-heading">
+            Mengapa <span class="highlight">Minyak Salueh</span>?
+          </h2>
+          <p class="tentang-subtitle">
+            Produk alami, hasil karya mahasiswa, dan solusi sehat dari alam
+            Kalimantan.
+          </p>
+
+          <div class="tentang-content">
+            <aside class="tentang-image">
+              <img
+                src="images/saluangbelum.jpg"
+                alt="Akar Saluang Belum"
+                loading="lazy"
+              />
+            </aside>
+
+            <article class="alasan-box">
+              <ul class="alasan-list">
+                <li class="alasan-item">
+                  <strong class="alasan-highlight">🌿 Berasal dari Alam:</strong>
+                  Minyak ini mengandung <strong>akar Saluang Belum</strong> dan
+                  <strong>serai</strong>, dua bahan alami dari pulau Kalimantan
+                  yang dipercaya mampu
+                  <em>meredakan nyeri dan memberikan efek relaksasi.</em>
+                </li>
+                <li class="alasan-item">
+                  <strong class="alasan-highlight">🎓 Inovasi Mahasiswa:</strong>
+                  Dibuat dalam program
+                  <strong>PMW (Program Mahasiswa Wirausaha)</strong>, produk ini
+                  menjadi bentuk nyata kontribusi mahasiswa dalam dunia usaha
+                  berbasis kesehatan alami.
+                </li>
+                <li class="alasan-item">
+                  <strong class="alasan-highlight">🤝 Kolaborasi:</strong>
+                  Tim kami berasal dari berbagai keahlian, yaitu rumpun
+                  kesehatan dan teknologi. Kami juga bermitra dengan petani
+                  lokal untuk bahan baku.
+                </li>
+              </ul>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <section id="testimonial" class="testimonial-section">
+        <h2 class="testimonial-title">Apa Kata Mereka?</h2>
+
+        <div class="testimonial-container">
+          <div class="testimonial">
+            <img
+              src="images/citra.jpeg"
+              alt="Citra"
+              class="testimonial-image"
+              loading="lazy"
+            />
+            <p class="testimonial-text">
+              "Baru pertama kali coba minyak urut dengan perpaduan akar saluang
+              dan sereh, unik banget"
+            </p>
+            <p class="user">- Citra -</p>
+          </div>
+
+          <div class="testimonial">
+            <img
+              src="images/putra.jpeg"
+              alt="Putra"
+              class="testimonial-image"
+              loading="lazy"
+            />
+            <p class="testimonial-text">
+              "Produknya benar-benar bagus, apalagi buat yang hobi olahraga,
+              ampuh banget buat mengatasi pegal-pegal"
+            </p>
+            <p class="user">- Putra -</p>
+          </div>
+
+          <div class="testimonial">
+            <img
+              src="images/tania.jpeg"
+              alt="Tania"
+              class="testimonial-image"
+              loading="lazy"
+            />
+            <p class="testimonial-text">
+              "Aroma minyak urutnya lembut dan menenangkan, bikin rileks tanpa
+              bau menyengat"
+            </p>
+            <p class="user">- Tania -</p>
+          </div>
+        </div>
+      </section>
+
+      <section id="faq" class="faq-section"></section>
+      <h2 class="faq-title">Frequently Asked Questions</h2>
+        <div class="faq-container">
+          <div class="faq-items">
+            <div class="faq-item">
+              <button class="faq-question" aria-expanded="false">
+                Apakah minyak urut ini aman digunakan setiap hari?
+                <span class="icon" aria-hidden="true">
+                  <img
+                    src="images/arrowicon.png"
+                    alt="Arrow icon"
+                    loading="lazy"
+                  />
+                </span>
+              </button>
+              <div class="faq-answer" hidden>
+                Tentunya aman sekali. Minyak urut yang kami buat 100% dari bahan alami, sehingga sangat aman apabila ingin digunakan setiap hari.
+              </div>
+            </div>
+            <div class="faq-item">
+              <button class="faq-question" aria-expanded="false">
+                Apakah minyak urut ini memberikan rasa lengket?
+                <span class="icon" aria-hidden="true">
+                  <img
+                    src="images/arrowicon.png"
+                    alt="Arrow icon"
+                    loading="lazy"
+                  />
+                </span>
+              </button>
+              <div class="faq-answer" hidden>
+                Tidak, minyak urut ini cepat meresap, jadi tidak meninggalkan rasa lengket di badan.
+              </div>
+            </div>
+            <div class="faq-item">
+              <button class="faq-question" aria-expanded="false">
+                Untuk yang memiliki kulit sensitif, apakah masih aman untuk menggunakan produk ini?
+                <span class="icon" aria-hidden="true">
+                  <img
+                    src="images/arrowicon.png"
+                    alt="Arrow icon"
+                    loading="lazy"
+                  />
+                </span>
+              </button>
+              <div class="faq-answer" hidden>
+                Ya, aman sekali karena produk ini dari bahan alami. namun apabila memiliki kulit sangat sensitif bisa dioleskan sedikit dibagian kulit kecil
+              </div>
+            </div>
+            <div class="faq-item">
+              <button class="faq-question" aria-expanded="false">
+                Minyak urutannya apakah memiliki variasi aroma?
+                <span class="icon" aria-hidden="true">
+                  <img
+                    src="images/arrowicon.png"
+                    alt="Arrow icon"
+                    loading="lazy"
+                  />
+                </span>
+              </button>
+              <div class="faq-answer" hidden>
+                Minyak urut ini tidak memiliki variasi aroma, aroma yang dimiliki produk ini adalah campuran dari sereh dan minyak kelapa
+              </div>
+            </div>
+            <div class="faq-item">
+              <button class="faq-question" aria-expanded="false">
+                Apabila ingin memberi secara offline, dapat dicari dimana?
+                <span class="icon" aria-hidden="true">
+                  <img
+                    src="images/arrowicon.png"
+                    alt="Arrow icon"
+                    loading="lazy"
+                  />
+                </span>
+              </button>
+              <div class="faq-answer" hidden>
+                Yah Sayang sekali, produk kami belum tersedia secara offline masih dipasarkan secara online
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="kontak" class="kontak">
+        <h1>Kontak</h1>
+        <div class="medias">
+          <a href="https://www.facebook.com/share/15aMNiUjDu/">
+            <i class="fab fa-facebook media"></i>
+          </a>
+          <a href="https://www.instagram.com/salueh.oil/">
+            <i class="fab fa-instagram media"></i>
+          </a>
+          <a href="https://wa.me/+6281250133019">
+            <i class="fab fa-whatsapp media"></i>
+          </a>
+        </div>
+      </section>
+    </main>
+
+    <footer>
+      <h1>
+        &copy; Copyright 2025,
+        <a href="">Salueh Oil</a> All Rights Reserved
+      </h1>
+    </footer>
+
+    <a
+      href="#beranda"
+      aria-label="ScrollTop"
+      class="fas fa-arrow-up"
+      id="scroll-top"
+    ></a>
+
+    <script src="particles.js"></script>
+    <script src="particle-js/app.js"></script>
+
+    <script src="script.js"></script>
+
+    <button id="cartFab" class="cart-fab" aria-label="Buka keranjang">
+      <i class="fas fa-shopping-cart"></i>
+      <span id="cartCount" class="cart-badge">0</span>
+    </button>
+    
+    <script>
+      const btn = document.getElementById('btnLogout');
+      if (btn) {
+        btn.addEventListener('click', () => {
+          if (confirm('Apakah Anda yakin ingin keluar?')) {
+            Auth.logout();
+            location.replace('login.html');
+          }
+        });
+      }
+    </script>
+  </body>
+</html>

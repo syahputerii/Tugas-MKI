@@ -1,0 +1,405 @@
+<!DOCTYPE html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Dashboard Admin — Salueh Oil</title>
+
+    <link rel="stylesheet" href="style.css" />
+    <link rel="stylesheet" href="admin.css" />
+
+    <script defer src="script.js"></script>
+
+    <script>
+      document.addEventListener("DOMContentLoaded", () => {
+        const raw = sessionStorage.getItem("salueh.auth.v1");
+        const data = raw ? JSON.parse(raw) : null;
+        if (!data) {
+          location.replace("login.html?next=admin.html");
+          return;
+        }
+        if (data.r !== "admin") {
+          location.replace("index.html");
+          return;
+        }
+        const who = document.getElementById("who");
+        if (who) who.textContent = data.u;
+
+        const links = [...document.querySelectorAll(".side-link")];
+        const panels = [...document.querySelectorAll(".panel")];
+        function showPanel(id) {
+          panels.forEach((p) => (p.hidden = true));
+          links.forEach((a) => a.classList.remove("active"));
+          const t = document.getElementById(id);
+          const l = document.querySelector(`.side-link[data-target="${id}"]`);
+          if (t) t.hidden = false;
+          if (l) l.classList.add("active");
+          history.replaceState(null, "", `#${id}`);
+        }
+        links.forEach((a) =>
+          a.addEventListener("click", (e) => {
+            e.preventDefault();
+            showPanel(a.dataset.target);
+          })
+        );
+        showPanel((location.hash || "#produk").slice(1));
+
+        const STORE_KEY = "salueh.products";
+        const tblBody = document.getElementById("tblProductsBody");
+        const btnAdd = document.getElementById("btnAdd");
+        const dlg = document.getElementById("dlg");
+        const dlgTitle = document.getElementById("dlgTitle");
+        const frm = document.getElementById("frmProduct");
+        const fSku = document.getElementById("fSku");
+        const fName = document.getElementById("fName");
+        const fPrice = document.getElementById("fPrice");
+        const fDesc = document.getElementById("fDesc");
+        const fImg = document.getElementById("fImg");
+        const imgPrev = document.getElementById("imgPrev");
+        const btnClose = document.getElementById("btnClose");
+
+        let editingSku = null;
+
+        function loadProducts() {
+          try {
+            const arr = JSON.parse(localStorage.getItem(STORE_KEY));
+            if (Array.isArray(arr)) return arr;
+          } catch {}
+          const seed = [
+            {
+              sku: "S60",
+              name: "Salueh Oil 60 ML",
+              price: 20000,
+              desc: "Ukuran 60 ml.",
+              img: "",
+            },
+            {
+              sku: "S100",
+              name: "Salueh Oil 100 ML",
+              price: 25000,
+              desc: "Ukuran 100 ml.",
+              img: "",
+            },
+          ];
+          localStorage.setItem(STORE_KEY, JSON.stringify(seed));
+          return seed;
+        }
+        function saveProducts(list) {
+          localStorage.setItem(STORE_KEY, JSON.stringify(list));
+        }
+        function rupiah(n) {
+          return "Rp" + Number(n || 0).toLocaleString("id-ID");
+        }
+
+        function renderProducts() {
+          const list = loadProducts();
+          tblBody.innerHTML = list
+            .map(
+              (p) => `
+            <tr>
+              <td>${p.sku}</td>
+              <td class="pname">
+                <div class="pitem">
+                  <img src="${p.img || "images/produk1.jpg"}" alt="${
+                p.name
+              }" class="thumb"/>
+                  <div>
+                    <div class="nm">${p.name}</div>
+                    <div class="desc">${p.desc || "-"}</div>
+                  </div>
+                </div>
+              </td>
+              <td>${rupiah(p.price)}</td>
+              <td class="actions">
+                <button class="btn" data-act="edit" data-sku="${
+                  p.sku
+                }">Edit</button>
+                <button class="btn btn-danger" data-act="del" data-sku="${
+                  p.sku
+                }">Hapus</button>
+              </td>
+            </tr>
+          `
+            )
+            .join("");
+        }
+
+        function openDialog(mode, product) {
+          dlg.classList.add("show");
+          if (mode === "add") {
+            dlgTitle.textContent = "Tambah Produk";
+            editingSku = null;
+            frm.reset();
+            document.getElementById("fSku").disabled = false;
+            imgPrev.src = "images/produk1.jpg";
+            imgPrev.dataset.dataurl = "";
+          } else {
+            dlgTitle.textContent = "Edit Produk";
+            editingSku = product.sku;
+            fSku.value = product.sku;
+            fSku.disabled = true;
+            fName.value = product.name;
+            fPrice.value = product.price;
+            fDesc.value = product.desc || "";
+            imgPrev.src = product.img || "images/produk1.jpg";
+            imgPrev.dataset.dataurl = product.img || "";
+            fImg.value = "";
+          }
+        }
+        function closeDialog() {
+          dlg.classList.remove("show");
+        }
+
+        btnAdd.addEventListener("click", () => openDialog("add"));
+
+        tblBody.addEventListener("click", (e) => {
+          const btn = e.target.closest("button[data-act]");
+          if (!btn) return;
+          const sku = btn.dataset.sku;
+          const list = loadProducts();
+          const idx = list.findIndex((p) => p.sku === sku);
+          if (idx < 0) return;
+
+          if (btn.dataset.act === "edit") {
+            openDialog("edit", list[idx]);
+          } else if (btn.dataset.act === "del") {
+            if (confirm("Hapus produk ini?")) {
+              list.splice(idx, 1);
+              saveProducts(list);
+              renderProducts();
+            }
+          }
+        });
+
+        fImg.addEventListener("change", () => {
+          const file = fImg.files?.[0];
+          if (!file) return;
+          const reader = new FileReader();
+          reader.onload = () => {
+            imgPrev.src = reader.result;
+            imgPrev.dataset.dataurl = reader.result;
+          };
+          reader.readAsDataURL(file);
+        });
+
+        frm.addEventListener("submit", (e) => {
+          e.preventDefault();
+          const sku = fSku.value.trim();
+          const name = fName.value.trim();
+          const price = Number(fPrice.value);
+          const desc = fDesc.value.trim();
+          const imgDataUrl = imgPrev.dataset.dataurl || "";
+
+          if (!sku || !name || !price) {
+            alert("SKU, Nama, dan Harga wajib diisi.");
+            return;
+          }
+
+          const list = loadProducts();
+          if (editingSku === null) {
+            if (list.some((p) => p.sku === sku)) {
+              alert("SKU sudah ada. Gunakan SKU lain.");
+              return;
+            }
+            list.push({ sku, name, price, desc, img: imgDataUrl });
+          } else {
+            const idx = list.findIndex((p) => p.sku === editingSku);
+            if (idx >= 0) {
+              list[idx] = {
+                sku: editingSku,
+                name,
+                price,
+                desc,
+                img: imgDataUrl || list[idx].img,
+              };
+            }
+          }
+          saveProducts(list);
+          closeDialog();
+          renderProducts();
+        });
+
+        btnClose.addEventListener("click", closeDialog);
+        document
+          .getElementById("btnClose2")
+          .addEventListener("click", closeDialog);
+
+        renderProducts();
+      });
+    </script>
+  </head>
+
+  <body class="admin">
+    <header>
+      <h1>Dashboard Admin — Salueh Oil</h1>
+      <div class="header-right">
+        Login sebagai: <strong id="who"></strong>
+        <button
+          onclick="if (confirm('Apakah Anda yakin ingin keluar?')) { Auth.logout(); window.location.replace('login.html'); }"
+          class="btn btn-danger logout-btn"
+        >
+          Keluar
+        </button>
+      </div>
+    </header>
+
+    <div class="admin-container">
+      <aside class="sidebar">
+        <h3>Menu</h3>
+        <ul>
+          <li>
+            <a href="#produk" class="side-link active" data-target="produk"
+              >Kelola Produk</a
+            >
+          </li>
+        </ul>
+        <ul>
+          <li>
+            <a href="#user" class="side-link" data-target="user"
+              >Kelola Pengguna</a
+            >
+          </li>
+          <li>
+            <a href="#pesanan" class="side-link" data-target="pesanan"
+              >Pesanan Masuk</a
+            >
+          </li>
+          <li>
+            <a href="#konten" class="side-link" data-target="konten"
+              >Kelola Konten</a
+            >
+          </li>
+        </ul>
+      </aside>
+
+      <main class="content">
+        <section id="produk" class="panel card">
+          <div class="card-head">
+            <h2>Kelola Produk</h2>
+            <button id="btnAdd" class="btn btn-primary">
+              Tambah Produk Baru
+            </button>
+          </div>
+          <p class="muted">
+            Tambah/Ubah <strong>foto</strong>, <strong>harga</strong>, dan
+            <strong>informasi</strong> produk.
+          </p>
+
+          <table class="tbl">
+            <thead>
+              <tr>
+                <th>SKU</th>
+                <th>Produk</th>
+                <th>Harga</th>
+                <th>Aksi</th>
+              </tr>
+            </thead>
+            <tbody id="tblProductsBody"></tbody>
+          </table>
+        </section>
+
+        <section id="user" class="panel card" hidden>
+          <h2>Kelola Pengguna</h2>
+          <p class="muted">Daftar pengguna.</p>
+          <table class="tbl">
+            <thead>
+              <tr>
+                <th>Email</th>
+                <th>Role</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>pengunjung@gmail.com</td>
+                <td>Pengunjung</td>
+              </tr>
+              <tr>
+                <td>admin@gmail.com</td>
+                <td>Admin</td>
+              </tr>
+            </tbody>
+          </table>
+        </section>
+
+        <section id="pesanan" class="panel card" hidden>
+          <h2>Pesanan Masuk</h2>
+          <p class="muted">Mockup data pesanan dari keranjang pengunjung.</p>
+          <ul class="list">
+            <li>Salueh Oil 60 ML ×2 — Rp40.000</li>
+            <li>Salueh Oil 100 ML ×1 — Rp25.000</li>
+          </ul>
+        </section>
+
+        <section id="konten" class="panel card" hidden>
+          <h2>Kelola Konten</h2>
+          <p class="muted">
+            Admin bisa mengubah FAQ, testimoni, atau banner (placeholder).
+          </p>
+          <div class="gap">
+            <button class="btn btn-primary">Edit FAQ</button>
+            <button class="btn btn-primary">Edit Testimoni</button>
+          </div>
+        </section>
+      </main>
+    </div>
+
+    <footer>© 2025 Salueh Oil — Dashboard Admin</footer>
+
+    <div id="dlg" class="modal" aria-hidden="true">
+      <div class="modal-card" role="dialog" aria-labelledby="dlgTitle">
+        <div class="modal-head">
+          <strong id="dlgTitle">Tambah Produk</strong>
+          <button id="btnClose" class="btn btn-danger">Tutup</button>
+        </div>
+        <form id="frmProduct">
+          <div class="modal-body">
+            <div class="form-row">
+              <label for="fSku">SKU *</label>
+              <input id="fSku" type="text" placeholder="mis. S60" required />
+            </div>
+            <div class="form-row">
+              <label for="fName">Nama Produk *</label>
+              <input
+                id="fName"
+                type="text"
+                placeholder="mis. Salueh Oil 60 ML"
+                required
+              />
+            </div>
+            <div class="form-row">
+              <label for="fPrice">Harga (Rp) *</label>
+              <input
+                id="fPrice"
+                type="number"
+                min="0"
+                step="1"
+                placeholder="20000"
+                required
+              />
+            </div>
+            <div class="form-row">
+              <label for="fDesc">Informasi/Deskripsi</label>
+              <textarea
+                id="fDesc"
+                rows="3"
+                placeholder="Tulis keterangan produk..."
+              ></textarea>
+            </div>
+            <div class="form-row">
+              <label>Foto Produk</label>
+              <div class="imgpick">
+                <img id="imgPrev" src="images/produk1.jpg" alt="Preview" />
+                <input id="fImg" type="file" accept="image/*" />
+              </div>
+            </div>
+          </div>
+          <div class="modal-foot">
+            <button type="button" id="btnClose2" class="btn">Batal</button>
+            <button type="submit" id="btnSave" class="btn btn-primary">
+              Simpan
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </body>
+</html>
