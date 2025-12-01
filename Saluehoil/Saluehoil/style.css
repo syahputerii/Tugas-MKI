@@ -916,12 +916,8 @@ footer h1 a:hover {
 /* Latar & font login */
 .login-page {
   color: var(--text);
-  background: radial-gradient(
-    1100px 600px at 20% 0%,
-    #fef7d6 0%,
-    #fffdf6 40%,
-    #fff 90%
-  );
+  background: url("images/bg_login.png") no-repeat center center fixed;
+  background-size: cover;
 }
 
 .login-page .wrap {
